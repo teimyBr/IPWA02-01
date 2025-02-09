@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
+    <title>Profil - Like Hero To Zero</title>
+</h:head>
+<h:body>
+        <ui:include src="navbar.xhtml"/>
+
+
+    <p:card rendered="#{logInController.loginStatus}">
+        <f:facet name="title">
+            Messwert melden
+        </f:facet>
+        <f:facet name="subtitle">
+            Hier kannst Du neue Messwerte zu der Datenbank hinzufügen.
+            Bevor diese für alle sichtbar werden, müssen sie allerdings Durch einen Administrator bestätigt werden
+        </f:facet>
+        <h:form id="addMeasurementForm">
+            <p:growl id="growl" showDetail="false" />
+            <p:panel>
+                <p:panelGrid columns="3" cellpadding="7">
+                    <p:outputLabel for="inputval" value="Emissionen (t/Einwohner):" />
+                    <p:inputNumber id="inputval"
+                                   value="#{profileController.value}"
+                                   modifyValueOnWheel="false"
+                                   required="true"
+                                   requiredMessage="Emissionen: Eingabe erforderlich!"/>
+                    <p:message for="inputval" display="icon"/>
+
+                    <p:outputLabel for="datepick" value="Jahr" />
+                    <p:datePicker id="datepick"
+                                  view="month"
+                                  value="#{profileController.year}"
+                                  pattern="MM/yyyy"
+                                  yearNavigator="true"
+                                  yearRange="1990:2024"
+                                  required="true"
+                                  requiredMessage="Jahr: Eingabe erforderlich!"/>
+                    <p:message for="datepick" display="icon"/>
+
+                    <p:outputLabel for="pickCountry" value="Land"/>
+                    <p:selectOneMenu id="pickCountry"
+                                     value="#{profileController.country}"
+                                     required="true"
+                                     editable="true"
+                                     requiredMessage="Land: Eingabe erforderlich!">
+                        <f:selectItems value="#{countryorganizer.findAll()}"/>
+
+                        <f:facet name="footer">
+                            <h:outputText value="#{countryorganizer.findAll().size()} Länder"
+                                          style="font-weight:bold;" styleClass="py-1 block"/>
+                        </f:facet>
+                    </p:selectOneMenu>
+                    <p:message for="pickCountry" display="icon"/>
+
+                    <p:commandButton value="Messwert melden"
+                                     action="#{profileController.addMeasurement(logInController.name)}"
+                                     update="verifyTable userMeasurements"
+                                     />
+                </p:panelGrid>
+            </p:panel>
+        </h:form>
+    </p:card>
+        <p:card rendered="#{logInController.loginStatus}">
+            <f:facet name="title">
+                Deine gemeldeten Messwerte
+            </f:facet>
+            <f:facet name="subtitle">
+                Hier siehst Du alle Deine gemeldeten Messwerte und Ihren Status
+            </f:facet>
+                    <h:form id="userMeasurements">
+                    <p:dataTable id="measurements" var="einMesswert"
+                                 value="#{messorganizer.findByPublisher(logInController.name)}"
+                                 rowStyleClass="#{profileController.stateColRowStyle(einMesswert)}"
+                                 scrollable="true" scrollHeight="50vh"
+                                 rows="10"
+                                 paginator="true" paginatorPosition="both"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} von {totalRecords} Datensätzen"
+                                 rowsPerPageTemplate="5,10,25,50,{ShowAll|'Alle'}">
+
+                        <p:column headerText="Land">
+                            <h:outputText value="#{einMesswert.country.name}"/>
+                        </p:column>
+
+                        <p:column headerText="Jahr" sortable="true">
+                            <h:outputText value="#{profileController.getYearFromDate(einMesswert.year)}" />
+                        </p:column>
+
+                        <p:column headerText="Emissionen (T/Einwohner)" sortable="true">
+                            <h:outputText value="#{einMesswert.value}" />
+                        </p:column>
+
+                        <p:column headerText="Status" sortable="true">
+                            <h:outputText value="#{einMesswert.state}" />
+                        </p:column>
+                        <p:column headerText="">
+                            <p:commandButton icon="pi pi-times"
+                                             action="#{profileController.deleteMeasurement(einMesswert.id)}"
+                                             update="verifyTable userMeasurements"
+                                             styleClass="rounded-button ui-button-danger ui-button-flat"
+                                             />
+                        </p:column>
+                    </p:dataTable>
+                    </h:form>
+        </p:card>
+
+    <p:card rendered="#{logInController.admin}">
+        <f:facet name="title">
+            Messwerte Bestätigen
+        </f:facet>
+        <f:facet name="subtitle">
+            Die folgenden Messwerte benötigen Deine Verifizierung
+        </f:facet>
+            <h:form id="verifyTable">
+                <p:growl id="growlVerify" showDetail="false" />
+
+            <p:dataTable id="verifyMeasurements" var="verifyMeasuremnt" value="#{messorganizer.findAllPending()}"
+                         scrollable="true" scrollHeight="50vh"
+                         rows="10"
+                         paginator="true" paginatorPosition="both"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} von {totalRecords} Datensätzen"
+                         rowsPerPageTemplate="5,10,25,50,{ShowAll|'Alle'}">
+
+                <p:column headerText="Land">
+                    <h:outputText value="#{verifyMeasuremnt.country.name}"/>
+                </p:column>
+
+                <p:column headerText="Jahr" sortable="true">
+                    <h:outputText value="#{profileController.getYearFromDate(verifyMeasuremnt.year)}" />
+                </p:column>
+
+                <p:column headerText="Emissionen (T/Einwohner)" sortable="true">
+                    <h:outputText value="#{verifyMeasuremnt.value}" />
+                </p:column>
+                <p:column headerText="Publisher" sortable="true">
+                    <h:outputText value="#{verifyMeasuremnt.publisher.name}" />
+                </p:column>
+
+                <p:column headerText="Status" sortable="true">
+                    <h:outputText value="#{verifyMeasuremnt.state}" />
+                </p:column>
+
+                <p:column headerText="">
+                    <p:commandButton value="Bestätigen"
+                                     action="#{profileController.approveMeasurementState(verifyMeasuremnt.id)}"
+                                     update="verifyTable userMeasurements"
+                                     styleClass="ui-button-outlined ui-button-success"
+                                     />
+                </p:column>
+                <p:column headerText="">
+                    <p:commandButton value="Verwerfen"
+                                     action="#{profileController.disapproveMeasurementState(verifyMeasuremnt.id)}"
+                                     update="verifyTable userMeasurements"
+                                     styleClass="ui-button-outlined ui-button-danger"
+                                     />
+                </p:column>
+            </p:dataTable>
+            </h:form>
+    </p:card>
+
+
+</h:body>
+</html>
+

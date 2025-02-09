@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
+    <title>Einloggen - Like Hero To Zero</title>
+</h:head>
+<h:body>
+
+        <ui:include src="navbar.xhtml"/>
+
+    <p:card style="width: 800px;" styleClass="center-Card" rendered="#{!logInController.loginStatus}">
+        <f:facet name="title">
+            Einloggen
+        </f:facet>
+        <f:facet name="subtitle">
+            Du hast noch kein Konto? Kein Problem -
+            <p:link outcome="register.xhtml?i=2" value=" registriere Dich hier!"></p:link>
+        </f:facet>
+        <h:form>
+            <p:growl id="growl" showDetail="false" />
+            <p:panel>
+                <h:panelGrid columns="3" cellpadding="7" style="width: 400px;">
+                    <h:outputLabel for="username" value="Benutzername:"/>
+                    <p:inputText id="username" label="Benutzername" value="#{logInController.name}" required="true" requiredMessage="Benutzername: Eingabe erforderlich!">
+                        <f:event type="postValidate" listener="#{logInController.postValidateName}"/>
+                    </p:inputText>
+                    <p:message for="username" display="icon"/>
+
+                    <h:outputLabel for="password" value="Passwort:"/>
+                    <p:password id="password" label="Passwort" value="#{logInController.passcode}" validator="#{logInController.validateLogin}" required="true" requiredMessage="Passwort: Eingabe erforderlich!"/>
+                    <p:message for="password" display="icon"/>
+
+                    <p:commandButton update="growl" value="Anmelden" action="#{logInController.login}" ajax="false"/>
+                </h:panelGrid>
+
+            </p:panel>
+        </h:form>
+    </p:card>
+
+    <p:card style="width: 800px;" styleClass="center-Card" rendered="#{logInController.loginStatus}">
+        <f:facet name="title">
+            Du bist bereits eingeloggt!
+        </f:facet>
+        <f:facet name="subtitle">
+            <p:link outcome="profile.xhtml?i=1" value="Hier"></p:link> gelangst Du zu Deinem Profil.
+        </f:facet>
+    </p:card>
+
+</h:body>
+</html>
+

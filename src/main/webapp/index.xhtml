@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
+  <title>Übersicht - Like Hero To Zero</title>
+</h:head>
+<h:body>
+
+    <!--http://www.primefaces.org/showcase/ui/data/htree/basic.xhtml?jfwid=f1817-->
+
+
+        <ui:include src="navbar.xhtml"/>
+
+    <p:card rendered="#{logInController.loginStatus}">
+        <f:facet name="title" rendered="#{logInController.loginStatus}">
+            Like Hero To Zero
+        </f:facet>
+        <f:facet name="subtitle">
+            Herzlich Willkommen, #{logInController.name}!
+        </f:facet>
+        <p>Hero To Zero ist eine Webanwendung, die Daten zu den weltweiten CO2-Emissionen übersichtlich und frei zugänglich darstellt.
+            Du bist bereits eingeloggt und kannst direkt loslegen und Deine eigenen Messwerte hinzufügen.</p>
+    </p:card>
+
+    <p:card rendered="#{!logInController.loginStatus}">
+        <f:facet name="title" rendered="#{!logInController.loginStatus}">
+            Like Hero To Zero
+        </f:facet>
+        <f:facet name="subtitle">
+            Herzlich Willkommen!
+        </f:facet>
+        <p>Hero To Zero ist eine Webanwendung, die Daten zu den weltweiten CO2-Emissionen übersichtlich und frei zugänglich darstellt.
+            Als registrierter Nutzer kannst Du sogar eigene Messwerte hinzufügen
+            - also <p:link outcome="login.xhtml?i=1" value="melde Dich am besten gleich an"></p:link>!</p>
+
+
+    </p:card>
+
+    <p:card>
+        <f:facet name="title">
+            Weltweite Emissionen
+        </f:facet>
+        <f:facet name="subtitle">
+            Emissionen in Tonnen pro Einwohner nach Jahr kummuliert
+        </f:facet>
+        <p:lineChart model="#{homeController.lineModel}" style="width: 100%; height: 50vh;"/>
+    </p:card>
+
+
+    <h:form>
+        <p:card>
+            <f:facet name="title">
+                Gemeldete Datensätze
+            </f:facet>
+            <f:facet name="subtitle">
+                Emissionen in Tonnen pro Einwohner nach Land
+            </f:facet>
+                    <p:dataTable id="measurements" var="einMesswert" value="#{messorganizer.findAllApproved()}" stripedRows="true"
+                                 scrollable="true" scrollHeight="50vh"
+                                 rows="10"
+                                 paginator="true" paginatorPosition="both"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} von {totalRecords} Datensätzen"
+                                 rowsPerPageTemplate="5,10,25,50,{ShowAll|'Alle'}"
+                    >
+
+                        <p:column headerText="Land" filterBy="#{einMesswert.country.name}" filterMatchMode="contains">
+                            <h:outputText value="#{einMesswert.country.name}" />
+                        </p:column>
+
+                        <p:column headerText="Jahr">
+                            <h:outputText value="#{profileController.getYearFromDate(einMesswert.year)}" />
+                        </p:column>
+
+                        <p:column headerText="Emissionen (T/Einwohner)">
+                            <h:outputText value="#{einMesswert.value}" />
+                        </p:column>
+                    </p:dataTable>
+        </p:card>
+    </h:form>
+
+
+
+</h:body>
+</html>
+

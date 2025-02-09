@@ -1,0 +1,53 @@
+body{
+    background-color: #f8f8f8;
+    margin: 0;
+}
+
+.app {
+    background-color: #bada83 !important;
+    color: #000000 !important;
+}
+.dis {
+    background-color: #fc7777 !important;
+    color: #000000 !important;
+}
+.pen {
+    background-color: #facd8d !important;
+    color: #000000 !important;
+}
+
+.ui-card{
+    padding: 5em;
+    max-width: 1400px;
+    margin: 2em auto;
+}
+
+.ui-dialog{
+    background-color: #ff8a8a;
+}
+
+.sticky{
+    position: sticky;
+    top: 0;
+}
+
+.center-card{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+body .ui-panel .ui-panel-content {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+body .ui-panelgrid .ui-panelgrid-cell {
+    border: none;
+    margin: 0;
+    padding: 1em 1em 0.5em 0em;
+}
